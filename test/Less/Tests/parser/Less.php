@@ -297,10 +297,28 @@ class Less_Parser extends Less_Cache{
 		// Get the rules scope
 		$rules = $this->rules;
 
+		// Define Basepath
+		if (!defined('BASE_PATH')) {
+			define( 'BASE_PATH', dirname($_SERVER['PHP_SELF']) );
+		}
+
 		// Loop through currently imported files
 		foreach ( self::$imports as $import ) {
 			// Push the current import file first to get a clean and sorted list
-			array_push($newArr, $import);
+			$fileInfo = array();
+			$pathInfo = pathinfo( $import );
+
+			$fileInfo['basename'] = $pathInfo['basename'];
+			$fileInfo['path'] = dirname( realpath( $import ) );
+			$fileInfo['basepath'] = ($pathInfo['dirname'] != '.') ? BASE_PATH . '/' . $pathInfo['dirname'] : BASE_PATH;
+			$fileInfo['updated'] = filemtime( $import );
+			$fileInfo['md5content'] = md5( file_get_contents($import) );
+			$fileInfo['filename'] = $pathInfo['filename'];
+			$fileInfo['extension'] = $pathInfo['extension'];
+			$fileInfo['size'] = filesize( $import );
+
+			// Bring it all together
+			array_push($newArr, $fileInfo);
 
 			// Extract the files which would be imported if fire parsing
 			foreach ( $rules as $file) {
@@ -308,7 +326,20 @@ class Less_Parser extends Less_Cache{
 				if ( isset($file->path) ) {
 					// Get only files for the current import
 					if ( $file->currentFileInfo['filename'] == $import ) {
-						$newArr[] = $file->path->value;
+						$fileInfo = array();
+						$pathInfo = pathinfo( $file->path->value );
+
+						$fileInfo['basename'] = $pathInfo['basename'];
+						$fileInfo['path'] = dirname( realpath( $file->path->value ) );
+						$fileInfo['basepath'] = ($pathInfo['dirname'] != '.') ? BASE_PATH . '/' . $pathInfo['dirname'] : BASE_PATH;
+						$fileInfo['updated'] = filemtime( $file->path->value );
+						$fileInfo['md5content'] = md5( file_get_contents($file->path->value) );
+						$fileInfo['filename'] = $pathInfo['filename'];
+						$fileInfo['extension'] = $pathInfo['extension'];
+						$fileInfo['size'] = filesize( $file->path->value );
+
+						// Bring it all together
+						$newArr[] = $fileInfo;
 					}
 				}
 			}
