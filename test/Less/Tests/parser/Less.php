@@ -283,6 +283,41 @@ class Less_Parser extends Less_Cache{
         $this->pos = $this->memo;
 	}
 
+
+	/*
+	 * Get pre-informations from files that will be parsed within the getCss function.
+	 * This makes it easier to determine wether or not if files have changed. Possible to work with other caching solutions.
+	 *
+	 *
+	 */
+	public function getFilePresets() {
+		// Set a helper array
+		$newArr = array();
+
+		// Get the rules scope
+		$rules = $this->rules;
+
+		// Loop through currently imported files
+		foreach ( self::$imports as $import ) {
+			// Push the current import file first to get a clean and sorted list
+			array_push($newArr, $import);
+
+			// Extract the files which would be imported if fire parsing
+			foreach ( $rules as $file) {
+				// Prevent getting comments array
+				if ( isset($file->path) ) {
+					// Get only files for the current import
+					if ( $file->currentFileInfo['filename'] == $import ) {
+						$newArr[] = $file->path->value;
+					}
+				}
+			}
+		}
+
+		return $newArr;
+	}
+
+
     /**
      * Update $this->current to reflect $this->input from the $this->pos
      *
