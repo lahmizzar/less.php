@@ -318,7 +318,7 @@ class Less_Parser extends Less_Cache{
 			$fileInfo['size'] = filesize( $import );
 
 			// Bring it all together
-			array_push($newArr, $fileInfo);
+			$newArr[$import] = $fileInfo;
 
 			// Extract the files which would be imported if fire parsing
 			foreach ( $rules as $file) {
@@ -339,7 +339,7 @@ class Less_Parser extends Less_Cache{
 						$fileInfo['size'] = filesize( $file->path->value );
 
 						// Bring it all together
-						$newArr[] = $fileInfo;
+						$newArr[$file->path->value] = $fileInfo;
 					}
 				}
 			}
