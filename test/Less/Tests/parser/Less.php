@@ -1,49 +1,48 @@
 <?php
-error_reporting(E_ALL);
-ini_set("display_errors", 1);
+$test  = 'Empty Compiler...';
 $error = 'No Errors...';
-$test = 'Empty Compiler...';
+$css   = '';
 
-		// file_put_contents, file_exists, 
+	// Require Lessc
+	require "phpless/Less.php";
 
-		// Require Lessc
-		require "phpless/Less.php";
+	// Set options
+//	$options = array( 'compress' => true );
+	$options = null;
 
-		// Set options
-//		$options = array( 'compress' => true );
-		$options = null;
+	// Initiate parser with given options
+	$parser = new Less_Parser( $options );
 
-		// Initiate parser with given options
-		$parser = new Less_Parser( $options );
+	// Set cacheDir
+	$parser->SetCacheDir( getcwd() . '/cache' );
 
-		// Set cacheDir
-		$parser->SetCacheDir('/var/www/vhosts/cdn.wgmd.net/httpdocs/dev/less/cache');
+	try {
+		$parser->parseFile( 'font-awesome.less' );
+		$parser->parseFile( 'bootstrap.less' );
+		$parser->parseFile( 'bootstrap-theme.less' );
+		$parser->parseFile( 'mixins/index.less' );
+	} catch (exception $e) {
+		$error = $e->getMessage();
+	}
 
-		try {
-			$parser->parseFile( 'font-awesome.less' );
-			$parser->parseFile( 'bootstrap.less' );
-			$parser->parseFile( 'bootstrap-theme.less' );
-			$parser->parseFile( 'mixins/index.less' );
-		} catch (exception $e) {
-			$error = $e->getMessage();
-		}
+	$test = $parser->getFilePresets();
 
-		$test = $parser->getFilePresets();
-
-//		$css = $parser->getCss();
-//		$test = $parser->allParsedFiles();
+//	$css = $parser->getCss();
+//	$test = $parser->allParsedFiles();
 
 
-// file_put_contents('master.css', $css);
+//	file_put_contents('master.css', $css);
 
 
 
 echo '<pre>';
+echo '<h1>Test</h1>';
 print_r( $test );
 echo '<hr>';
+echo '<h1>Compiled CSS</h1>';
 print_r( $css );
 echo '<hr>';
+echo '<h1>Errors</h1>';
 print_r( $error );
 echo '</pre>';
-
 ?>
