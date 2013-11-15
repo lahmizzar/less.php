@@ -33,7 +33,7 @@ $report = '';
 //		$parser->parseFile( 'font-awesome.less' );
 		$parser->parseFile( 'bootstrap.less' );
 //		$parser->parseFile( 'bootstrap-theme.less' );
-		$parser->parseFile( 'mixins/index.less' );
+//		$parser->parseFile( 'mixins/index.less' );
 	} catch (exception $e) {
 		$error = $e->getMessage();
 	}
