@@ -306,19 +306,24 @@ class Less_Parser extends Less_Cache{
 		foreach ( self::$imports as $import ) {
 			// Push the current import file first to get a clean and sorted list
 			$fileInfo = array();
-			$pathInfo = pathinfo( $import );
+			$currentFile = $import;
+			$pathInfo = pathinfo( $currentFile );
 
 			$fileInfo['basename'] = $pathInfo['basename'];
-			$fileInfo['path'] = dirname( realpath( $import ) );
+			$fileInfo['path'] = dirname( realpath( $currentFile ) );
 			$fileInfo['basepath'] = ($pathInfo['dirname'] != '.') ? BASE_PATH . '/' . $pathInfo['dirname'] : BASE_PATH;
-			$fileInfo['updated'] = filemtime( $import );
-			$fileInfo['md5content'] = md5( file_get_contents($import) );
+			$fileInfo['updated'] = filemtime( $currentFile );
+			$fileInfo['md5content'] = md5( file_get_contents($currentFile) );
 			$fileInfo['filename'] = $pathInfo['filename'];
 			$fileInfo['extension'] = $pathInfo['extension'];
-			$fileInfo['size'] = filesize( $import );
+			$fileInfo['size'] = filesize( $currentFile );
+			$fileInfo['currentFile'] = $currentFile;
 
 			// Bring it all together
-			$newArr[$import] = $fileInfo;
+			$newArr[$currentFile] = $fileInfo;
+
+			// Used for files in subfolders
+			$subdir = ($pathInfo['dirname'] != '.') ? $pathInfo['dirname'] . '/' : '';
 
 			// Extract the files which would be imported if fire parsing
 			foreach ( $rules as $file) {
@@ -327,19 +332,21 @@ class Less_Parser extends Less_Cache{
 					// Get only files for the current import
 					if ( $file->currentFileInfo['filename'] == $import ) {
 						$fileInfo = array();
-						$pathInfo = pathinfo( $file->path->value );
+						$currentFile = $subdir . $file->path->value;
+						$pathInfo = pathinfo( $currentFile );
 
 						$fileInfo['basename'] = $pathInfo['basename'];
-						$fileInfo['path'] = dirname( realpath( $file->path->value ) );
+						$fileInfo['path'] = dirname( realpath( $currentFile ) );
 						$fileInfo['basepath'] = ($pathInfo['dirname'] != '.') ? BASE_PATH . '/' . $pathInfo['dirname'] : BASE_PATH;
-						$fileInfo['updated'] = filemtime( $file->path->value );
-						$fileInfo['md5content'] = md5( file_get_contents($file->path->value) );
+						$fileInfo['updated'] = filemtime( $currentFile );
+						$fileInfo['md5content'] = md5( file_get_contents($currentFile) );
 						$fileInfo['filename'] = $pathInfo['filename'];
 						$fileInfo['extension'] = $pathInfo['extension'];
-						$fileInfo['size'] = filesize( $file->path->value );
+						$fileInfo['size'] = filesize( $currentFile );
+						$fileInfo['currentFile'] = $currentFile;
 
 						// Bring it all together
-						$newArr[$file->path->value] = $fileInfo;
+						$newArr[$currentFile] = $fileInfo;
 					}
 				}
 			}
